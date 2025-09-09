@@ -1,0 +1,125 @@
+import java.util.*;
+
+class Product {
+    int sku;
+    String name;
+    int quantity;
+
+    Product(int sku, String name, int quantity) {
+        this.sku = sku;
+        this.name = name;
+        this.quantity = quantity;
+    }
+
+    @Override
+    public String toString() {
+        return "(" + sku + ", " + name + ", " + quantity + ")";
+    }
+}
+
+public class InventoryManagementSystem {
+    static List<Product> inventory = new ArrayList<>();
+
+    // Insert product
+    public static void insertProduct(int sku, String name, int qty) {
+        for (Product p : inventory) {
+            if (p.sku == sku) {
+                System.out.println("SKU " + sku + " already exists. Updating quantity.");
+                p.quantity += qty;
+                return;
+            }
+        }
+        inventory.add(new Product(sku, name, qty));
+        System.out.println("Product added: " + name + " (" + sku + ")");
+    }
+
+    // Process Sale
+    public static void processSale(int sku, int qtySold) {
+        for (Product p : inventory) {
+            if (p.sku == sku) {
+                if (p.quantity >= qtySold) {
+                    p.quantity -= qtySold;
+                    System.out.println("Sale processed: " + qtySold + " units of " + p.name);
+                } else {
+                    System.out.println("Insufficient stock for " + p.name + ". Available: " + p.quantity);
+                }
+                return;
+            }
+        }
+        System.out.println("SKU " + sku + " not found in inventory.");
+    }
+
+    // Identify zero stock
+    public static void identifyZeroStock() {
+        List<Integer> zeroStock = new ArrayList<>();
+        for (Product p : inventory) {
+            if (p.quantity == 0) {
+                zeroStock.add(p.sku);
+            }
+        }
+        if (zeroStock.isEmpty()) {
+            System.out.println("No zero stock items found.");
+        } else {
+            System.out.println("Zero stock SKUs: " + zeroStock);
+        }
+    }
+
+    // Display inventory
+    public static void displayInventory() {
+        if (inventory.isEmpty()) {
+            System.out.println("Inventory is empty.");
+        } else {
+            System.out.println("Current Inventory:");
+            for (Product p : inventory) {
+                System.out.println(p);
+            }
+        }
+    }
+
+    // --- Menu Driven Program ---
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        while (true) {
+            System.out.println("\n--- Inventory Management System ---");
+            System.out.println("1. Insert Product");
+            System.out.println("2. Process Sale");
+            System.out.println("3. Identify Zero Stock");
+            System.out.println("4. Display Inventory");
+            System.out.println("5. Exit");
+            System.out.print("Enter choice: ");
+            int choice = sc.nextInt();
+
+            if (choice == 1) {
+                System.out.print("Enter SKU: ");
+                int sku = sc.nextInt();
+                sc.nextLine(); // consume newline
+                System.out.print("Enter Product Name: ");
+                String name = sc.nextLine();
+                System.out.print("Enter Quantity: ");
+                int qty = sc.nextInt();
+                insertProduct(sku, name, qty);
+
+            } else if (choice == 2) {
+                System.out.print("Enter SKU to sell: ");
+                int sku = sc.nextInt();
+                System.out.print("Enter Quantity sold: ");
+                int qtySold = sc.nextInt();
+                processSale(sku, qtySold);
+
+            } else if (choice == 3) {
+                identifyZeroStock();
+
+            } else if (choice == 4) {
+                displayInventory();
+
+            } else if (choice == 5) {
+                System.out.println("Exiting... Goodbye!");
+                break;
+
+            } else {
+                System.out.println("Invalid choice. Try again.");
+            }
+        }
+        sc.close();
+    }
+}
